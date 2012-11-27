@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>goirc by gokyle</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>goirc</h1>
+        <p>Basic IRC client library in Go.</p>
+
+        <p class="view"><a href="https://github.com/gokyle/goirc">View the Project on GitHub <small>gokyle/goirc</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/gokyle/goirc/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/gokyle/goirc/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/gokyle/goirc">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p>Package goirc implements a basic IRC client. goirc is implemented
+around the <code>Irc</code> structure. The package is well documented with
+<code>godoc</code>; for more information, check the documentation.</p>
+
+<p>An IRC configuration can be read from a JSON file; see the NewIrc 
+function. For example,</p>
+
+<pre><code>irc, err := goirc.NewIrc("config.json")
+</code></pre>
+
+<p><code>goirc</code> implements a number of commands that act on the <code>Irc</code> structure;
+an IRC session is initiated with the <code>Connect()</code> method. PRIVMSGs can
+be sent with the <code>Msg</code> method, and data may be read from the session
+using the <code>Recv</code> method. </p>
+
+<p>The <code>Pong</code> method is designed to be used as a goroutine; when a line
+is returned from <code>Recv()</code>, the <code>pingRegex</code> can be used to determine
+whether incoming data is a PING request:</p>
+
+<pre><code>client, err := goirc.NewIrc("config.json")
+
+// ...
+
+func isPing(msg string) (bool, string) {
+         if !pingRegex.MatchString(msg) {
+                return false, ""
+         }
+         return pingRegex.ReplaceAllString(msg, "$1"), true
+ }
+
+ if pinged, sender := isPing(msg); pinged {
+         go client.Pong(sender)
+ }
+</code></pre>
+
+<h2>License</h2>
+
+<p>This package is provided under a dual ISC / public domain license.</p>
+
+<p>The public domain license is the one applicable to the user of this
+code; you are free to choose whichever affords the maximum freedom
+to you.</p>
+
+<h3>The ISC license:</h3>
+
+<pre><code>Copyright (c) 2012 Kyle Isom &lt;kyle@tyrfingr.is&gt;
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the
+above copyright notice and this permission notice appear in all
+copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
+DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA
+OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/gokyle">gokyle</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
