@@ -27,7 +27,6 @@
             go client.Pong(sender)
     }
 */
-
 /*
    This package is provided under a dual ISC / public domain license.
    The public domain license is the one applicable to the user of this
