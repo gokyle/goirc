@@ -26,16 +26,16 @@ var (
 )
 
 type Irc struct {
-	server    string   `json="server"`
-	port      int      `json="port"`
-	nick      string   `json="nick"`
-	real      string   `json="real"`
-	host      string   `json="host"`
-	sys       string   `json="sys"`
-	user      string   `json="user"`
-	channels  []string `json="channels"`
-	password  string   `json="password"`
-	reconnect bool     `json="reconnect"`
+	server    string
+	port      int
+	nick      string
+	real      string
+	host      string
+	sys       string
+	user      string
+	channels  []string
+	password  string
+	reconnect bool
 	conn      *net.TCPConn
 }
 
@@ -50,15 +50,51 @@ type Irc struct {
 */
 func NewIrc(filename string) (cfg *Irc, err error) {
 	var jsonByte []byte
+	var jsonCfg map[string]interface{}
+
 	if jsonByte, err = ioutil.ReadFile(filename); err != nil {
 		return
 	}
 
-	err = json.Unmarshal(jsonByte, &cfg)
+	err = json.Unmarshal(jsonByte, &jsonCfg)
 	if err != nil {
 		fmt.Println("[!] error unmarshalling JSON: ", err.Error())
 		return
 	} else {
+		// TODO: this really needs to be cleaned up
+		cfg = new(Irc)
+		if server, ok := jsonCfg["server"]; ok {
+			cfg.server = server.(string)
+		}
+		if port, ok := jsonCfg["port"]; ok {
+			cfg.port = port.(int)
+		}
+		if nick, ok := jsonCfg["nick"]; ok {
+			cfg.nick = nick.(string)
+		}
+		if real, ok := jsonCfg["real"]; ok {
+			cfg.real = real.(string)
+		}
+		if host, ok := jsonCfg["host"]; ok {
+			cfg.host = host.(string)
+		}
+		if sys, ok := jsonCfg["sys"]; ok {
+			cfg.sys = sys.(string)
+		}
+		if password, ok := jsonCfg["password"]; ok {
+			cfg.password = password.(string)
+		}
+		if user, ok := jsonCfg["user"]; ok {
+			cfg.user = user.(string)
+		}
+		if channels, ok := jsonCfg["channels"]; ok {
+			for _, ch := range channels.([]interface{}) {
+				cfg.channels = append(cfg.channels, ch.(string))
+			}
+		}
+		if reconn, ok := jsonCfg["reconnect"]; ok {
+			cfg.reconnect = reconn.(bool)
+		}
 		if cfg.port == 0 {
 			cfg.port = 6667
 		}
@@ -72,7 +108,8 @@ func NewIrc(filename string) (cfg *Irc, err error) {
 			err = fmt.Errorf("invalid configuration file")
 		}
 	}
-	return cfg, err
+	fmt.Printf("%#v\n", *cfg)
+	return
 }
 
 // Connect carries out the IRC connection, including identification and
@@ -82,7 +119,7 @@ func (irc *Irc) Connect() (connected bool, err error) {
 	connected = false
 
 	/* TODO: provide ipv6 support */
-	if ircServer, err = net.ResolveTCPAddr("tcp4", irc.ConnStr()); err != nil {
+	if ircServer, err = net.ResolveTCPAddr("tcp", irc.ConnStr()); err != nil {
 		fmt.Printf("[!] couldn't connect to %s: %s\n", irc.ConnStr(),
 			err.Error())
 		return
@@ -141,11 +178,11 @@ func (irc *Irc) Send(msg string) (err error) {
 	return
 }
 
-// Recv listens for incoming messages. Two constants have been provided for 
-// use: IRC_READ_CHUNK should be used in almost all cases, as it listens for 
-// a fixed size message; IRC_READ_ALL will read until the connection closes. 
-// The block parameter, if false, will set a timeout on the socket (this 
-// timeout can be changed by modifying the constant IRC_TIMEOUT), resetting 
+// Recv listens for incoming messages. Two constants have been provided for
+// use: IRC_READ_CHUNK should be used in almost all cases, as it listens for
+// a fixed size message; IRC_READ_ALL will read until the connection closes.
+// The block parameter, if false, will set a timeout on the socket (this
+// timeout can be changed by modifying the constant IRC_TIMEOUT), resetting
 // the socket to blocking mode after the receive.
 func (irc *Irc) Recv(size int, block bool) (reply string, err error) {
 	buf := make([]byte, size)
@@ -266,5 +303,4 @@ func TrimReply(r rune) bool {
 	default:
 		return false
 	}
-	return false
 }
