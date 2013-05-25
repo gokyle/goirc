@@ -220,6 +220,9 @@ func (irc *Irc) ConnStr() string {
 
 // Disconnect sends a disconnect command to the IRC server.
 func (irc *Irc) Disconnect() error {
+	if irc.conn == nil {
+		return
+	}
 	err := irc.Send("QUIT")
 	if err != nil {
 		fmt.Println("[!] disconnect error: ", err.Error())
