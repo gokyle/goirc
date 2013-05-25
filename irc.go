@@ -108,7 +108,6 @@ func NewIrc(filename string) (cfg *Irc, err error) {
 			err = fmt.Errorf("invalid configuration file")
 		}
 	}
-	fmt.Printf("%#v\n", *cfg)
 	return
 }
 
