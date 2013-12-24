@@ -46,7 +46,7 @@ type Irc struct {
         * nick: nickname to use on the server
         * real: real name
         * sys: system name
-        * channels: a list of strings specifying channels to connect to
+        * channels: a string or list of strings specifying channels to connect to
 */
 func NewIrc(filename string) (cfg *Irc, err error) {
 	var jsonByte []byte
