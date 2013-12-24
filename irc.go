@@ -88,8 +88,14 @@ func NewIrc(filename string) (cfg *Irc, err error) {
 			cfg.user = user.(string)
 		}
 		if channels, ok := jsonCfg["channels"]; ok {
-			for _, ch := range channels.([]interface{}) {
-				cfg.channels = append(cfg.channels, ch.(string))
+			switch v := channels.(type) {
+				case string:
+					cfg.channels = append(cfg.channels, v)
+					fmt.Println(cfg.channels)
+				case []interface{}:
+					for _, ch := range channels.([]interface{}) {
+						cfg.channels = append(cfg.channels, ch.(string))
+					}
 			}
 		}
 		if reconn, ok := jsonCfg["reconnect"]; ok {
