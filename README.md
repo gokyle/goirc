@@ -22,7 +22,7 @@ is returned from `Recv()`, the `pingRegex` can be used to determine
 whether incoming data is a PING request:
 
 ```
-client, err := goirc.NewIrc("config.json")
+irc, err := goirc.NewIrc("config.json")
 
 // ...
 
@@ -34,7 +34,7 @@ func isPing(msg string) (bool, string) {
  }
 
  if pinged, sender := isPing(msg); pinged {
-         go client.Pong(sender)
+         go irc.Pong(sender)
  }
 ```
 
